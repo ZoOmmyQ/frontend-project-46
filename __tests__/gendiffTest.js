@@ -1,23 +1,29 @@
-import * as fs from 'fs';
-// eslint-disable-next-line import/no-duplicates
-import path from 'path';
+
+import { test, expect } from '@jest/globals';
 import { fileURLToPath } from 'url';
-// eslint-disable-next-line import/no-duplicates
-import { dirname } from 'path';
-import gendiff from '../src/gendiff';
+import path, { dirname } from 'path';
+import { readFileSync } from 'fs';
+import generateDiff from '../src/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const getFixturePath = (filenames) => path.join(__dirname, '..', '__fixtures__', filenames);
-const readFile = (filename) => fs.readFileSync(getFixturePath(filename), 'utf-8');
+const fileExtensions = ['json', 'yml'];
+const formatters = ['stylish', 'plain', 'json'];
 
-test('check diff fn', () => {
-  const filepath1 = getFixturePath('file1.json');
-  const filepath2 = getFixturePath('file2.json');
+const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
+const stylish = readFileSync(getFixturePath('stylish'), { encoding: 'utf8', flag: 'r' });
+const plain = readFileSync(getFixturePath('plain'), { encoding: 'utf8', flag: 'r' });
+const json = readFileSync(getFixturePath('json'), { encoding: 'utf8', flag: 'r' });
 
-  const actual = gendiff(filepath1, filepath2);
-  const expectedResult = readFile('expectedResult.txt');
-  // eslint-disable-next-line no-undef
-  expect(actual).toEqual(expectedResult);
+const output = { stylish, plain, json };
+
+const testArgs = formatters.flatMap((format) => (
+  fileExtensions.map((fileExtension) => [fileExtension, format])
+));
+
+test.each(testArgs)('%s type files difference with %s output', (fileExtension, format) => {
+  const file1 = getFixturePath(`file1.${fileExtension}`);
+  const file2 = getFixturePath(`file2.${fileExtension}`);
+  expect(generateDiff(file1, file2, format)).toEqual(output[format]);
 });
