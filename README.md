@@ -28,8 +28,6 @@ To run the program, you must specify the ```gendiff``` command and then absolute
 To specify data output type, you must add this type name with the flag -f: (```-f plain```, ```-f json```, ```-f stylish```(default))
 
 
-```
-#### Presents
-You can use ```gendiff``` to find the difference both for flat and nested YAML/JSON files.
+You can use ```gendiff``` to find the difference
 
 [![asciicast](https://asciinema.org/a/Ob5FXsBfvGqbMi2SzIFtSFk4C.svg)](https://asciinema.org/a/Ob5FXsBfvGqbMi2SzIFtSFk4C)
